@@ -44,3 +44,6 @@ cmake_modules/
 cmake-build-debug/
 
 *.pyc
+.vscode/
+Examples/Stereo/stereo_ocv_sync
+
