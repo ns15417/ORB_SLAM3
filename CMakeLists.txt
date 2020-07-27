@@ -44,7 +44,7 @@ endif()
 MESSAGE("OPENCV VERSION:")
 MESSAGE(${OpenCV_VERSION})
 
-find_package(Eigen3 3.1.0 REQUIRED)
+find_package(Eigen3 3.1)
 find_package(Pangolin REQUIRED)
 
 include_directories(
@@ -144,6 +144,10 @@ target_link_libraries(stereo_kitti ${PROJECT_NAME})
 add_executable(stereo_euroc
 Examples/Stereo/stereo_euroc.cc)
 target_link_libraries(stereo_euroc ${PROJECT_NAME})
+
+add_executable(stereo_ocv_sync
+Examples/Stereo/stereo_ocv_sync.cc)
+target_link_libraries(stereo_ocv_sync ${PROJECT_NAME})
 
 add_executable(stereo_tum_vi
 Examples/Stereo/stereo_tum_vi.cc)
