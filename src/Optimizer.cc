@@ -3997,10 +3997,10 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
     int nOutKF2 = 0;
     int nMatchWithoutMP = 0;
 
-    cv::Mat img1 = cv::imread(pKF1->mNameFile, CV_LOAD_IMAGE_UNCHANGED);
-    cv::cvtColor(img1, img1, CV_GRAY2BGR);
-    cv::Mat img2 = cv::imread(pKF2->mNameFile, CV_LOAD_IMAGE_UNCHANGED);
-    cv::cvtColor(img2, img2, CV_GRAY2BGR);
+    // cv::Mat img1 = cv::imread(pKF1->mNameFile, CV_LOAD_IMAGE_UNCHANGED);
+    // cv::cvtColor(img1, img1, CV_GRAY2BGR);
+    // cv::Mat img2 = cv::imread(pKF2->mNameFile, CV_LOAD_IMAGE_UNCHANGED);
+    // cv::cvtColor(img2, img2, CV_GRAY2BGR);
 
     vector<int> vIdsOnlyInKF2;
 
@@ -4067,7 +4067,7 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
                 vIdsOnlyInKF2.push_back(id2);
             }
 
-            cv::circle(img1, pKF1->mvKeys[i].pt, 1, cv::Scalar(0, 0, 255));
+            //cv::circle(img1, pKF1->mvKeys[i].pt, 1, cv::Scalar(0, 0, 255));
 
             continue;
 
@@ -4115,7 +4115,7 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
 
         if(bShowImages) //TODO test to project the matched points in the image
         {
-            cv::circle(img1, pKF1->mvKeys[i].pt, 1, cv::Scalar(0, 255, 0));
+            //cv::circle(img1, pKF1->mvKeys[i].pt, 1, cv::Scalar(0, 255, 0));
 
             Eigen::Matrix<double,3,1> eigP3D2c = Converter::toVector3d(P3D2c);
             Eigen::Matrix<double,3,1> eigP3D1c = g2oS12.map(eigP3D2c);
@@ -4126,7 +4126,7 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
             float y = fy1 * cvP3D1c.at<float>(1)*invz + cy1;
 
             cv::Point2f ptProjPoint(x, y);
-            cv::line(img1, pKF1->mvKeys[i].pt, ptProjPoint, cv::Scalar(255, 0, 0), 1);
+            //cv::line(img1, pKF1->mvKeys[i].pt, ptProjPoint, cv::Scalar(255, 0, 0), 1);
         }
 
 
@@ -4155,7 +4155,7 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
 
             if(bShowImages)
             {
-                cv::circle(img2, pKF2->mvKeys[i2].pt, 1, cv::Scalar(0, 255, 0));
+                //cv::circle(img2, pKF2->mvKeys[i2].pt, 1, cv::Scalar(0, 255, 0));
             }
         }
         else
@@ -4182,7 +4182,7 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
 
             if(bShowImages)
             {
-                cv::circle(img2, kpUn2.pt, 1, cv::Scalar(0, 0, 255));
+                //cv::circle(img2, kpUn2.pt, 1, cv::Scalar(0, 0, 255));
             }
 
             //TODO print projection, because all of them become in outliers
@@ -4208,7 +4208,7 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
             if(bShowImages)
             {
                 cv::Point2f ptProjPoint(x, y);
-                cv::line(img2, kpUn2.pt, ptProjPoint, cv::Scalar(255, 0, 0), 1);
+                //cv::line(img2, kpUn2.pt, ptProjPoint, cv::Scalar(255, 0, 0), 1);
             }
         }
 
@@ -4271,10 +4271,10 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
     }
     if(bShowImages)
     {
-        string pathImg1 = "./test_OptSim3/KF_" + to_string(pKF1->mnId) + "_Main.jpg";
-        cv::imwrite(pathImg1, img1);
-        string pathImg2 = "./test_OptSim3/KF_" + to_string(pKF1->mnId) + "_Matched.jpg";
-        cv::imwrite(pathImg2, img2);
+        // string pathImg1 = "./test_OptSim3/KF_" + to_string(pKF1->mnId) + "_Main.jpg";
+        // cv::imwrite(pathImg1, img1);
+        // string pathImg2 = "./test_OptSim3/KF_" + to_string(pKF1->mnId) + "_Matched.jpg";
+        // cv::imwrite(pathImg2, img2);
     }
 
     Verbose::PrintMess("Sim3: First Opt -> Correspondences: " + to_string(nCorrespondences) + "; nBad: " + to_string(nBad) + "; nBadOutKF2: " + to_string(nBadOutKF2), Verbose::VERBOSITY_DEBUG);
