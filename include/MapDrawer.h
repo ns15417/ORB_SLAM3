@@ -38,6 +38,7 @@ public:
     Atlas* mpAtlas;
 
     void DrawMapPoints();
+    void DrawGroundPlane();
     void DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph, const bool bDrawInertialGraph);
     void DrawCurrentCamera(pangolin::OpenGlMatrix &Twc);
     void SetCurrentCameraPose(const cv::Mat &Tcw);

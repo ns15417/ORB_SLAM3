@@ -214,6 +214,7 @@ void Viewer::Run()
         if(menuShowPoints)
             mpMapDrawer->DrawMapPoints();
 
+        mpMapDrawer->DrawGroundPlane();
         pangolin::FinishFrame();
 
         cv::Mat toShow;
