@@ -886,11 +886,11 @@ void Tracking::Track()
                 }
             }
 
-            return;
+           // return;
         }
     }
 
-
+    std::cout << "------ current State : " << mState << endl;
     if ((mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO) && mpLastKeyFrame)
         mCurrentFrame.SetNewBias(mpLastKeyFrame->GetImuBias());
 
@@ -2122,14 +2122,15 @@ bool Tracking::NeedNewKeyFrame()
     if(nKFs<=2)
         nMinObs=2;
     int nRefMatches = mpReferenceKF->TrackedMapPoints(nMinObs);
-
+    cout << "nRefMatches = " << nRefMatches << endl;
     // Local Mapping accept keyframes?
     bool bLocalMappingIdle = mpLocalMapper->AcceptKeyFrames();
 
     // Check how many "close" points are being tracked and how many could be potentially created.
     int nNonTrackedClose = 0;
     int nTrackedClose= 0;
-
+    int nTotalClosedPoints = 0;
+    std::cout << " mThDepth = " << mThDepth << endl; 
     if(mSensor!=System::MONOCULAR && mSensor!=System::IMU_MONOCULAR)
     {
         int N = (mCurrentFrame.Nleft == -1) ? mCurrentFrame.N : mCurrentFrame.Nleft;
@@ -2137,17 +2138,19 @@ bool Tracking::NeedNewKeyFrame()
         {
             if(mCurrentFrame.mvDepth[i]>0 && mCurrentFrame.mvDepth[i]<mThDepth)
             {
+                nTotalClosedPoints++;
                 if(mCurrentFrame.mvpMapPoints[i] && !mCurrentFrame.mvbOutlier[i])
                     nTrackedClose++;
                 else
                     nNonTrackedClose++;
-
             }
         }
     }
-
+    cout << "for stereo tracking: nTrackedClose = " << nTrackedClose << " nNonTrackedClose = " << nNonTrackedClose 
+         << " nTotalClosedPoints = " << nTotalClosedPoints << endl;
     bool bNeedToInsertClose;
-    bNeedToInsertClose = (nTrackedClose<100) && (nNonTrackedClose>70);
+    bNeedToInsertClose = (nTrackedClose < nTotalClosedPoints*0.8) && (nNonTrackedClose>nTotalClosedPoints*0.7);
+    //bNeedToInsertClose = (nTrackedClose<100) && (nNonTrackedClose>70);
 
     // Thresholds
     float thRefRatio = 0.75f;
