@@ -27,20 +27,24 @@
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
-
+#include <message_filters/time_synchronizer.h>
+#include <sensor_msgs/CompressedImage.h>
 #include<opencv2/core/core.hpp>
 
 #include"../../../include/System.h"
 
 using namespace std;
+#define COMPRESS
 
 class ImageGrabber
 {
 public:
     ImageGrabber(ORB_SLAM3::System* pSLAM):mpSLAM(pSLAM){}
-
+#ifdef COMPRESS
+    void GrabStereo(const sensor_msgs::CompressedImageConstPtr& msgLeft,const sensor_msgs::CompressedImageConstPtr& msgRight);
+#else
     void GrabStereo(const sensor_msgs::ImageConstPtr& msgLeft,const sensor_msgs::ImageConstPtr& msgRight);
-
+#endif
     ORB_SLAM3::System* mpSLAM;
     bool do_rectify;
     cv::Mat M1l,M2l,M1r,M2r;
@@ -107,12 +111,13 @@ int main(int argc, char **argv)
 
     ros::NodeHandle nh;
 
-    message_filters::Subscriber<sensor_msgs::Image> left_sub(nh, "/camera/left/image_raw", 1);
-    message_filters::Subscriber<sensor_msgs::Image> right_sub(nh, "camera/right/image_raw", 1);
-    typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> sync_pol;
+    message_filters::Subscriber<sensor_msgs::CompressedImage> left_sub(nh, "/left_cam/image_raw/compressed", 1);
+    message_filters::Subscriber<sensor_msgs::CompressedImage> right_sub(nh, "/right_cam/image_raw/compressed", 1);
+    typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::CompressedImage, sensor_msgs::CompressedImage> sync_pol;
     message_filters::Synchronizer<sync_pol> sync(sync_pol(10), left_sub,right_sub);
     sync.registerCallback(boost::bind(&ImageGrabber::GrabStereo,&igb,_1,_2));
-
+    // message_filters::TimeSynchronizer<sensor_msgs::CompressedImageConstPtr, sensor_msgs::CompressedImageConstPtr> sync(left_sub, right_sub,10);
+    // sync.registerCallback(boost::bind(&ImageGrabber::GrabStereo,&igb,_1,_2));
     ros::spin();
 
     // Stop all threads
@@ -128,6 +133,48 @@ int main(int argc, char **argv)
     return 0;
 }
 
+#ifdef COMPRESS
+void ImageGrabber::GrabStereo(const sensor_msgs::CompressedImageConstPtr& msgLeft,const sensor_msgs::CompressedImageConstPtr& msgRight)
+{
+    cv::Mat left_img;
+    // Copy the ros image message to cv::Mat.
+    try
+    {
+        left_img = cv::imdecode(cv::Mat(msgLeft->data),1);
+    }
+    catch (cv_bridge::Exception& e)
+    {
+        ROS_ERROR("cv_bridge exception: %s", e.what());
+        return;
+    }
+
+    cv::Mat right_img;
+    try
+    {
+        right_img = cv::imdecode(cv::Mat(msgRight->data),1);
+    }
+    catch (cv_bridge::Exception& e)
+    {
+        ROS_ERROR("cv_bridge exception: %s", e.what());
+        return;
+    }
+
+    if(do_rectify)
+    {
+        // cv::Mat imLeft, imRight;
+        // cv::remap(cv_ptrLeft->image,imLeft,M1l,M2l,cv::INTER_LINEAR);
+        // cv::remap(cv_ptrRight->image,imRight,M1r,M2r,cv::INTER_LINEAR);
+        // mpSLAM->TrackStereo(imLeft,imRight,cv_ptrLeft->header.stamp.toSec());
+    }
+    else
+    {
+        cout << "left timestamp: " << setprecision(18) << msgLeft->header.stamp.toSec() << endl;
+        cout << "right timestamp: " << setprecision(18) << msgRight->header.stamp.toSec() << endl;
+        mpSLAM->TrackStereo(left_img, right_img,msgLeft->header.stamp.toSec());
+    }
+
+}
+#else
 void ImageGrabber::GrabStereo(const sensor_msgs::ImageConstPtr& msgLeft,const sensor_msgs::ImageConstPtr& msgRight)
 {
     // Copy the ros image message to cv::Mat.
@@ -166,5 +213,5 @@ void ImageGrabber::GrabStereo(const sensor_msgs::ImageConstPtr& msgLeft,const se
     }
 
 }
-
+#endif
 
