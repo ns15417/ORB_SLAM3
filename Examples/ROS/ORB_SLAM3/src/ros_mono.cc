@@ -30,14 +30,17 @@
 #include"../../../include/System.h"
 
 using namespace std;
+#define COMPRESS
 
 class ImageGrabber
 {
 public:
     ImageGrabber(ORB_SLAM3::System* pSLAM):mpSLAM(pSLAM){}
-
+#ifndef COMPRESS
     void GrabImage(const sensor_msgs::ImageConstPtr& msg);
-
+#else
+    void GrabImage(const sensor_msgs::CompressedImageConstPtr& msgLeft);
+#endif
     ORB_SLAM3::System* mpSLAM;
 };
 
@@ -59,7 +62,7 @@ int main(int argc, char **argv)
     ImageGrabber igb(&SLAM);
 
     ros::NodeHandle nodeHandler;
-    ros::Subscriber sub = nodeHandler.subscribe("/camera/image_raw", 1, &ImageGrabber::GrabImage,&igb);
+    ros::Subscriber sub = nodeHandler.subscribe("/left_cam/image_raw/compressed", 1, &ImageGrabber::GrabImage,&igb);
 
     ros::spin();
 
@@ -74,6 +77,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
+#ifndef COMPRESS
 void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr& msg)
 {
     // Copy the ros image message to cv::Mat.
@@ -90,5 +94,21 @@ void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr& msg)
 
     mpSLAM->TrackMonocular(cv_ptr->image,cv_ptr->header.stamp.toSec());
 }
-
+#else
+void ImageGrabber::GrabImage(const sensor_msgs::CompressedImageConstPtr& msgLeft)
+{
+    cv::Mat left_img;
+    // Copy the ros image message to cv::Mat.
+    try
+    {
+        left_img = cv::imdecode(cv::Mat(msgLeft->data),1);
+    }
+    catch (cv_bridge::Exception& e)
+    {
+        ROS_ERROR("cv_bridge exception: %s", e.what());
+        return;
+    }
+    mpSLAM->TrackMonocular(left_img, msgLeft->header.stamp.toSec());
+}
+#endif
 
