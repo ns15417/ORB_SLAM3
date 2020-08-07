@@ -332,7 +332,7 @@ namespace ORB_SLAM3 {
     }
 
     float KannalaBrandt8::TriangulateMatches(GeometricCamera *pCamera2, const cv::KeyPoint &kp1, const cv::KeyPoint &kp2, const cv::Mat &R12, const cv::Mat &t12, const float sigmaLevel, const float unc, cv::Mat& p3D) {
-        cv::Mat r1 = this->unprojectMat(kp1.pt); //所对应在相机坐标系中的三维点
+        cv::Mat r1 = this->unprojectMat(kp1.pt);
         cv::Mat r2 = pCamera2->unprojectMat(kp2.pt);
 
         //Check parallax
