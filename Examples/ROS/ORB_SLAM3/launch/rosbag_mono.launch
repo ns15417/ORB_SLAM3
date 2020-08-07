@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="vocabularty_path" default="/home/shinan/Project/ORB_SLAM3/Vocabulary/ORBvoc.txt" />
+    <arg name="camera_setting_path" default="/home/shinan/Project/ORB_SLAM3/Examples/Monocular/180_left.yaml" />
+
+    <arg name="play_bag" value="true"/>
+    <arg name="bag_file" value="/media/shinan/DATA/ROSbag/180_stereo/2020-05-27-08-11-26.bag"/>
+
+    <node name="player" pkg="rosbag" type="play"  args="--clock $(arg bag_file)" if="$(arg play_bag)"/>
+
+    <node name="ORB_SLAM3" pkg="ORB_SLAM3" type="Mono" output="screen" 
+    	args="$(arg vocabularty_path) $(arg camera_setting_path)">
+    </node>
+
+</launch>

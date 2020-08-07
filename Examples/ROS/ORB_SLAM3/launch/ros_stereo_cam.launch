@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="vocabularty_path" default="/home/shinan/Project/ORB_SLAM3/Vocabulary/ORBvoc.txt" />
+    <arg name="camera_setting_path" default="/home/shinan/Project/ORB_SLAM3/Examples/Stereo/180_stereo.yaml" />
+    <arg name="do_rectify" default="false" />
+
+   <node name="cam0" pkg="usb_cam" type="usb_cam_node" output="screen" >
+    <param name="video_device" value="/dev/video1" />
+    <param name="image_width" value="640" />
+    <param name="image_height" value="480" />
+    <param name="pixel_format" value="yuyv" />
+    <param name="image_transport" type="string" value="compressed"/>
+    <param name="camera_frame_id" value="left_cam" />
+    <param name="io_method" value="mmap"/>
+  </node>
+
+   <node name="cam1" pkg="usb_cam" type="usb_cam_node" output="screen" >
+    <param name="video_device" value="/dev/video2" />
+    <param name="image_width" value="640" />
+    <param name="image_height" value="480" />
+    <param name="pixel_format" value="yuyv" />
+    <param name="image_transport" type="string" value="compressed"/>
+    <param name="camera_frame_id" value="right_cam" />
+    <param name="io_method" value="mmap"/>
+  </node>
+
+    <node name="ORB_SLAM3" pkg="ORB_SLAM3" type="Stereo" output="screen" 
+    	args="$(arg vocabularty_path) $(arg camera_setting_path) $(arg do_rectify)">
+       <remap from="/camera/left/image_raw" to="/cam0/image_raw"/>
+       <remap from="/camera/right/image_raw" to="/cam1/image_raw"/>
+  	</node>
+
+</launch>
