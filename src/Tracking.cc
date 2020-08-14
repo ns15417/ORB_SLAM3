@@ -127,7 +127,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
 
             static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[0] = rightLappingBegin;
             static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[1] = rightLappingEnd;
-
+            
             fSettings["Tlr"] >> mTlr;
             cout << "- mTlr: \n" << mTlr << endl;
             mpFrameDrawer->both = true;
@@ -342,8 +342,6 @@ void Tracking::SetStepByStep(bool bSet)
 {
     bStepByStep = bSet;
 }
-
-
 
 cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRectRight, const double &timestamp, string filename)
 {
